@@ -28,9 +28,9 @@ def preprocess_image(img):
     new_img = img[50:140,:,:]
     # apply gaussian blurring
     new_img = cv2.GaussianBlur(new_img, (3,3), 0)
-    # scale to 66x200x3 (same as nVidia)
+    # scale to 66x200x3
     new_img = cv2.resize(new_img,(200, 66), interpolation = cv2.INTER_AREA)
-    # convert to YUV color space (as nVidia paper suggests)
+    # convert to YUV color space
     #Images from simulator come in RGB format
     new_img = cv2.cvtColor(new_img, cv2.COLOR_RGB2YUV)
     return new_img

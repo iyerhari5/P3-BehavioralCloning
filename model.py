@@ -8,9 +8,9 @@ def preprocess_image(img):
     new_img = img[50:140,:,:]
     # apply gaussian blurring
     new_img = cv2.GaussianBlur(new_img, (3,3), 0)
-    # scale to 66x200x3 (same as nVidia)
+    # scale to 66x200x3 
     new_img = cv2.resize(new_img,(200, 66), interpolation = cv2.INTER_AREA)
-    # convert to YUV color space (as nVidia paper suggests)
+    # convert to YUV color space
 	#Images from cv2 imread  come in RGB format
     new_img = cv2.cvtColor(new_img, cv2.COLOR_BGR2YUV)
     return new_img
@@ -62,7 +62,7 @@ def get_training_data(image_paths,measurements):
 	
 def augment_vertshift_shading(img, angle):
     new_img = img.astype(float)
-    # random brightness - the mask bit keeps values from going beyond (0,255)
+    # random brightness - add a random value to the image
     value = np.random.randint(-28, 28)
     if value > 0:
         mask = (new_img[:,:,0] + value) > 255 
@@ -79,7 +79,7 @@ def augment_vertshift_shading(img, angle):
     else:
         new_img[:,mid:w,0] *= factor
     
-    # randomly shift horizon
+    # shift the horizon up/down 
     h,w,_ = new_img.shape
     horizon = 2*h/5
     v_shift = np.random.randint(-h/4,h/4)
@@ -167,11 +167,8 @@ model.add(Convolution2D(64,3,3,border_mode='valid', activation='relu',W_regulari
 model.add(Convolution2D(64,3,3,border_mode='valid', activation='relu',W_regularizer=l2(0.001), subsample=(1,1)))
 model.add(Flatten())
 model.add(Dense(1164, activation='relu'))
-#model.add(Dropout(0.5))
 model.add(Dense(100, activation='relu'))
-#model.add(Dropout(0.5))
 model.add(Dense(50, activation='relu'))
-#model.add(Dropout(0.5))
 model.add(Dense(10, activation='relu'))
 model.add(Dense(1, activation='tanh'))
 

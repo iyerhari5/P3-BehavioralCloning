@@ -4,9 +4,9 @@
 
 The goals / steps of this project are the following:
 
- *Use deep neural networks and convolutional neural networks to clone driving behavior. 
- *Train, validate and test a model using Keras. The trained model should output a steering angle to an autonomous vehicle.
- *Use the simulator to test the performance of the model on two tracks
+*Use deep neural networks and convolutional neural networks to clone driving behavior. 
+*Train, validate and test a model using Keras. The trained model should output a steering angle to an autonomous vehicle.
+*Use the simulator to test the performance of the model on two tracks.
  
 [//]: # (Image References)
 
@@ -16,11 +16,7 @@ The goals / steps of this project are the following:
 [image4]: ./Figures/9-layer-ConvNet-model.png
 
 
-## Rubric Points
-Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
-
----
-### Writeup 
+## Writeup 
 Here is a link to my [project code](https://github.com/iyerhari5/P3-BehavioralCloning)
 
 Data Set Summary & Exploration
@@ -70,57 +66,7 @@ To train the model, I used an Adam Optimizer. The mean squared error(MSE) was us
 were implemented to save the model only when the MSE on the validation set improved from the previously saved verison. An early stopping callback 
 was also implemented if the MSE did not improve. However for the small number of epochs used here, early termination never occured.
 
+### Testing  Model on the test tracks
 
+The model performed reasonably well on [Track 1](https://github.com/iyerhari5/P3-BehavioralCloning/run1.mp4) and on  [Track 1](https://github.com/iyerhari5/P3-BehavioralCloning/run2.mp4)
 
-My final model results were:
-* training set accuracy of   :99.7%
-* validation set accuracy of :98.3%
-* test set accuracy of       :96.8%
-
-
-The initial architecture I started with was the LeNet architecture. That gave around 94% validation accuracy without any data augnmentation. 
-With the data augmnetaiton, the validation accuracy improved by ~2%. Fur further improvements, I added more complexity to the model by
-increasing the number of features in the first and second convolutional layers. This resulted in increasing the validation set accuracy to ~98%
-
-The model seems to generalize reasonably well giving ~97% accuracy on the test set.
-
-### Testing  Model on New Images
-
-Here are five German traffic signs that I found on the web that seem reasonably similar to images in the traning set.
-	
-![alt text][image6] 
-
-Here are the results of the prediction:
-
-| Image			        |     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Speed limit (30km/h)  | Speed limit (30km/h)							| 
-| Speed limit (70km/h)  | Speed limit (70km/h)							| 
-| Speed limit (80km/h)  | Speed limit (80km/h)							| 
-| Go straight or right  | Go straight or right							|
-| Slippery Road			| Wild animals Crossing  						|
-
-
-The model was able to correctly guess 5 of the 5 traffic signs, which gives an accuracy of 100%. 
-This seems comparable to the 96.8% accuracy achieved on the test set.
-
-Next we look at how confident the model was in making the predictions. For the first image, the model is very  
-sure that this is a speed limit 30 km/h sign (probability of 1.0)
-
-| Probability         	|     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| 1.0         			| Speed limit (30km/h)	 						| 
-| ~0    				| Speed limit (50km/h)							|
-| ~0					| Speed limit (70km/h)							|
-| ~0	      			| Speed limit (20km/h)							|
-| ~0				    | Yield   										|
-
-The next four images also the model is very sure about the prediction with the most probable class having probability of ~1.0
-
-
-### Visualizing the Neural Network 
-
-The output of the first convolutional layer was visualized with the first traffic sign image from the web as the input. As can be seen from the
-figure below, the layer seems to be activating on the edges of the speed limit letters and the circular outline.
-
-![alt text][image7]

@@ -12,6 +12,9 @@ The goals / steps of this project are the following:
 
 [image1]: ./Figures/Training-Distribution.png
 [image2]: ./Figures/Data-augmentation.png
+[image3]: ./Figures/Training-Distribution-After.png
+[image4]: ./Figures/9-layer-ConvNet-model.png
+
 
 ## Rubric Points
 Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -34,7 +37,7 @@ The image below shows the distribution of the steering angles in this first trai
 As we can see the data consists mainly of low steering angles centered around zero which corresponds to straight driving. In order to make the
 dataset more balanced, I decided to augment the data. The following methods were used for this.
  
- 1. Horizontal fillping of the images. The corresponding steering angle was multiplied by -1.
+ 1. Horizontal flipping of the images. The corresponding steering angle was multiplied by -1.
  2. Random brightness changes
  3. Random shading changes. Parts of the image were made brighter/darker
  4. Shifting of the horizon using a perspective transformation in the vertical direction
@@ -42,20 +45,23 @@ dataset more balanced, I decided to augment the data. The following methods were
 The figure below shows an input image and the image after being transformed with steps 2,3 and 4 mentioned above.
 ![alt text][image2]
  
-In order to make the dataset more balanced with respect to the steering angles 
+In order to make the dataset more balanced with respect to the steering angles, the transformation above were applied only if the absolute 
+value of the original image steering angle was greater than 0.2 degrees. The figure below shows the distribution of the training dataset
+after the above data augmentation steps.
+![alt text][image3]
 
 
 ### Model Architecture 
 
-The original images in the data set are color images of size 32x32. Based on results reported in the literature, I decided to
-convert the images to grayscale as the first step. This helps to reduce the dimensionality of the input space. The images are then
-normalized by a simple transformation to center the data.
+The model used is the model from the NVIDIA autonomous vehicle group. The figure below shows the architecture.
+![alt text][image4]
+
 
 image = (image-128.0)/128.0
 
 Here is an example of a traffic sign image before and after grayscaling and normalization.
 
-![alt text][image4]
+
 
 Data Augmentation
 

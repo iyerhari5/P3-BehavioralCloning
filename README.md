@@ -1,122 +1,141 @@
-# Behaviorial Cloning Project
+# Behavioral Cloning
 
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
-
-Overview
 ---
-This repository contains starting files for the Behavioral Cloning Project.
 
-In this project, you will use what you've learned about deep neural networks and convolutional neural networks to clone driving behavior. You will train, validate and test a model using Keras. The model will output a steering angle to an autonomous vehicle.
-
-We have provided a simulator where you can steer a car around a track for data collection. You'll use image data and steering angles to train a neural network and then use this model to drive the car autonomously around the track.
-
-We also want you to create a detailed writeup of the project. Check out the [writeup template](https://github.com/udacity/CarND-Behavioral-Cloning-P3/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup. The writeup can be either a markdown file or a pdf document.
-
-To meet specifications, the project will require submitting five files: 
-* model.py (script used to create and train the model)
-* drive.py (script to drive the car - feel free to modify this file)
-* model.h5 (a trained Keras model)
-* a report writeup file (either markdown or pdf)
-* video.mp4 (a video recording of your vehicle driving autonomously around the track for at least one full lap)
-
-This README file describes how to output the video in the "Details About Files In This Directory" section.
-
-Creating a Great Writeup
----
-A great writeup should include the [rubric points](https://review.udacity.com/#!/rubrics/432/view) as well as your description of how you addressed each point.  You should include a detailed description of the code used (with line-number references and code snippets where necessary), and links to other supporting documents or external references.  You should include images in your writeup to demonstrate how your code works with examples.  
-
-All that said, please be concise!  We're not looking for you to write a book here, just a brief description of how you passed each rubric point, and references to the relevant code :). 
-
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup.
-
-The Project
----
 The goals / steps of this project are the following:
-* Use the simulator to collect data of good driving behavior 
-* Design, train and validate a model that predicts a steering angle from image data
-* Use the model to drive the vehicle autonomously around the first track in the simulator. The vehicle should remain on the road for an entire loop around the track.
-* Summarize the results with a written report
+ *Use deep neural networks and convolutional neural networks to clone driving behavior. 
+ *Train, validate and test a model using Keras. The tained model should output a steering angle to an autonomous vehicle.
+ *Use the simulator to test the performance of the model on two tracks
+ 
+[//]: # (Image References)
 
-### Dependencies
-This lab requires:
+[image1]: ./Figures/Training-Distribution.png
+[image2]: ./examples/Distribution-Validation-Set.png "Dist-Valid"
+[image3]: ./examples/Distribution-Test-Set.png "Test-Train"
+[image4]: ./examples/grayscale-conversion.png "GrayScaleConversion"
+[image5]: ./examples/augmentation.png
+[image6]: ./examples/webImages.png
+[image7]: ./examples/first-conv-layer.png
 
-* [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit)
+## Rubric Points
+Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
 
-The lab enviroment can be created with CarND Term1 Starter Kit. Click [here](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) for the details.
+---
+### Writeup 
+Here is a link to my [project code](https://github.com/iyerhari5/P3-BehavioralCloning)
 
-The following resources can be found in this github repository:
-* drive.py
-* video.py
-* writeup_template.md
+Data Set Summary & Exploration
 
-The simulator can be downloaded from the classroom. In the classroom, we have also provided sample data that you can optionally use to help train your model.
+Training data on Track 1 was provided by Udacity and I found that to be quite sufficient to train the model. On Track2, I created training data with
+two laps around the track. The training data consists of left, center and right camera images as well as the streering angle for the car to drive
+given the current images. All three images were used for the traning. The steering angles for the left and right cameras were adjusted by subtracing/adding
+a small value from the recorded steering angle. The total size of this basic training data was 58155 samples. 
 
-## Details About Files In This Directory
 
-### `drive.py`
+The image below shows the distribution of the steering angles in this first training dataset.
+![alt text][image1]
 
-Usage of `drive.py` requires you have saved the trained model as an h5 file, i.e. `model.h5`. See the [Keras documentation](https://keras.io/getting-started/faq/#how-can-i-save-a-keras-model) for how to create this file using the following command:
-```sh
-model.save(filepath)
-```
 
-Once the model has been saved, it can be used with drive.py using this command:
 
-```sh
-python drive.py model.h5
-```
+### Model Architecture 
 
-The above command will load the trained model and use the model to make predictions on individual images in real-time and send the predicted angle back to the server via a websocket connection.
+The original images in the data set are color images of size 32x32. Based on results reported in the literature, I decided to
+convert the images to grayscale as the first step. This helps to reduce the dimensionality of the input space. The images are then
+normalized by a simple transformation to center the data.
 
-Note: There is known local system's setting issue with replacing "," with "." when using drive.py. When this happens it can make predicted steering values clipped to max/min values. If this occurs, a known fix for this is to add "export LANG=en_US.utf8" to the bashrc file.
+image = (image-128.0)/128.0
 
-#### Saving a video of the autonomous agent
+Here is an example of a traffic sign image before and after grayscaling and normalization.
 
-```sh
-python drive.py model.h5 run1
-```
+![alt text][image4]
 
-The fourth argument, `run1`, is the directory in which to save the images seen by the agent. If the directory already exists, it'll be overwritten.
+Data Augmentation
 
-```sh
-ls run1
+As can be noted, the training set contains only around 35K images. In order to make the traning more generalizable, I decided to 
+augment the data with samples generated from the training set itself. For this I implemented functions to add translation, rotation, zooming
+and perspective projection on the images.
 
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_424.jpg
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_451.jpg
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_477.jpg
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_528.jpg
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_573.jpg
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_618.jpg
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_697.jpg
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_723.jpg
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_749.jpg
-[2017-01-09 16:10:23 EST]  12KiB 2017_01_09_21_10_23_817.jpg
-...
-```
+Here is an example of an original image and 4 more images generated with the described transformations from the original image.
 
-The image file name is a timestamp of when the image was seen. This information is used by `video.py` to create a chronological video of the agent driving.
+![alt text][image5]
 
-### `video.py`
+The augmented dataset hence should be more robust to differences in the pose of the camera, centering and rotation in the images 
+presented to the neural network.
 
-```sh
-python video.py run1
-```
 
-Creates a video based on images found in the `run1` directory. The name of the video will be the name of the directory followed by `'.mp4'`, so, in this case the video will be `run1.mp4`.
 
-Optionally, one can specify the FPS (frames per second) of the video:
+My final model consisted of the following layers:
 
-```sh
-python video.py run1 --fps 48
-```
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 Grayscale image   			    	| 
+| Convolution 5x5     	| 1x1 stride, VALID padding, outputs 28x28x20 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 14x14x20 				|
+| Convolution 5x5     	| 1x1 stride, VALID padding, outputs 10x10x36 	|
+| RELU					|												|
+| Max pooling	      	| 2x2 stride,  outputs 5x5x36 					|
+| Fully connected		| outputs 120        							|
+| RELU					|												|
+| Fully connected		| outputs 84        							|
+| RELU					|												|
+| Fully connected		| outputs 43        							|
 
-Will run the video at 48 FPS. The default FPS is 60.
+### Training
 
-#### Why create a video
+To train the model, I used an Adam Optimizer. The training was done with 20 Epochs  and a batch size of 128. In order for the model to
+generalize better, I used dropouts in the two fully connected layers before the output layer. The drop out probability was set to 0.5 during
+the training.
 
-1. It's been noted the simulator might perform differently based on the hardware. So if your model drives succesfully on your machine it might not on another machine (your reviewer). Saving a video is a solid backup in case this happens.
-2. You could slightly alter the code in `drive.py` and/or `video.py` to create a video of what your model sees after the image is processed (may be helpful for debugging).
+My final model results were:
+* training set accuracy of   :99.7%
+* validation set accuracy of :98.3%
+* test set accuracy of       :96.8%
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
 
+The initial architecture I started with was the LeNet architecture. That gave around 94% validation accuracy without any data augnmentation. 
+With the data augmnetaiton, the validation accuracy improved by ~2%. Fur further improvements, I added more complexity to the model by
+increasing the number of features in the first and second convolutional layers. This resulted in increasing the validation set accuracy to ~98%
+
+The model seems to generalize reasonably well giving ~97% accuracy on the test set.
+
+### Testing  Model on New Images
+
+Here are five German traffic signs that I found on the web that seem reasonably similar to images in the traning set.
+	
+![alt text][image6] 
+
+Here are the results of the prediction:
+
+| Image			        |     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Speed limit (30km/h)  | Speed limit (30km/h)							| 
+| Speed limit (70km/h)  | Speed limit (70km/h)							| 
+| Speed limit (80km/h)  | Speed limit (80km/h)							| 
+| Go straight or right  | Go straight or right							|
+| Slippery Road			| Wild animals Crossing  						|
+
+
+The model was able to correctly guess 5 of the 5 traffic signs, which gives an accuracy of 100%. 
+This seems comparable to the 96.8% accuracy achieved on the test set.
+
+Next we look at how confident the model was in making the predictions. For the first image, the model is very  
+sure that this is a speed limit 30 km/h sign (probability of 1.0)
+
+| Probability         	|     Prediction	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| 1.0         			| Speed limit (30km/h)	 						| 
+| ~0    				| Speed limit (50km/h)							|
+| ~0					| Speed limit (70km/h)							|
+| ~0	      			| Speed limit (20km/h)							|
+| ~0				    | Yield   										|
+
+The next four images also the model is very sure about the prediction with the most probable class having probability of ~1.0
+
+
+### Visualizing the Neural Network 
+
+The output of the first convolutional layer was visualized with the first traffic sign image from the web as the input. As can be seen from the
+figure below, the layer seems to be activating on the edges of the speed limit letters and the circular outline.
+
+![alt text][image7]

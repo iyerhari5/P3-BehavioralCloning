@@ -3,19 +3,15 @@
 ---
 
 The goals / steps of this project are the following:
+
  *Use deep neural networks and convolutional neural networks to clone driving behavior. 
- *Train, validate and test a model using Keras. The tained model should output a steering angle to an autonomous vehicle.
+ *Train, validate and test a model using Keras. The trained model should output a steering angle to an autonomous vehicle.
  *Use the simulator to test the performance of the model on two tracks
  
 [//]: # (Image References)
 
 [image1]: ./Figures/Training-Distribution.png
-[image2]: ./examples/Distribution-Validation-Set.png "Dist-Valid"
-[image3]: ./examples/Distribution-Test-Set.png "Test-Train"
-[image4]: ./examples/grayscale-conversion.png "GrayScaleConversion"
-[image5]: ./examples/augmentation.png
-[image6]: ./examples/webImages.png
-[image7]: ./examples/first-conv-layer.png
+[image2]: ./Figures/Data-Augmentation.png
 
 ## Rubric Points
 Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
@@ -35,6 +31,18 @@ a small value from the recorded steering angle. The total size of this basic tra
 The image below shows the distribution of the steering angles in this first training dataset.
 ![alt text][image1]
 
+As we can see the data consists mainly of low steering angles centered around zero which corresponds to straight driving. In order to make the
+dataset more balanced, I decided to augment the data. The following methods were used for this.
+ 
+ 1. Horizontal fillping of the images. The corresponding steering angle was multiplied by -1.
+ 2. Random brightness changes
+ 3. Random shading changes. Parts of the image were made brighter/darker
+ 4. Shifting of the horizon using a perspective transformation in the vertical direction
+
+The figure below shows an input image and the image after being transformed with steps 2,3 and 4 mentioned above.
+![alt text][image2]
+ 
+In order to make the dataset more balanced with respect to the steering angles 
 
 
 ### Model Architecture 

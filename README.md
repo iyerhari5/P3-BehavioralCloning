@@ -4,9 +4,9 @@
 
 The goals / steps of this project are the following:
 
-*Use deep neural networks and convolutional neural networks to clone driving behavior. 
-*Train, validate and test a model using Keras. The trained model should output a steering angle to an autonomous vehicle.
-*Use the simulator to test the performance of the model on two tracks.
+* Use deep neural networks and convolutional neural networks to clone driving behavior. 
+* Train, validate and test a model using Keras. The trained model should output a steering angle to an autonomous vehicle.
+* Use the simulator to test the performance of the model on two tracks.
  
 [//]: # (Image References)
 
@@ -73,15 +73,17 @@ was also implemented if the MSE did not improve. However for the small number of
 The results of the model on both tracks are shown below. 
 
 Track 1:
+
 ![alt text][image5]
 
 Track 2:
+
 ![alt text][image6]
 
 
 ### Testing for generalization
 
-In order to check how well the model generalized, I used only the training data from Track 2 to create the model. The only change was that I increased the data augmnetation to create more samples from the 
+In order to test how well the model can generalize, I used only the training data from Track 2 to create the model. The only change was that I increased the data augmnetation to create more samples from the 
 input data. The results were quite satisfactory and the model was able to perform quite well on Track 1 even though it has never seen the track before
 in the training!
 

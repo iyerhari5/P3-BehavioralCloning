@@ -28,7 +28,8 @@ Data Set Summary & Exploration
 Training data on Track 1 was provided by Udacity and I found that to be quite sufficient to train the model. On Track2, I created training data with
 two laps around the track. The training data consists of left, center and right camera images as well as the streering angle for the car to drive
 given the current images. All three images were used for the traning. The steering angles for the left and right cameras were adjusted by subtracing/adding
-a small value from the recorded steering angle. The total size of this basic training data was 58155 samples. 
+a small value from the recorded steering angle. The original images size of 160x320x3 was converted to a size of 66x200x3.  Also the image format
+was converted to YUV color space. The total size of this basic training dataset was 58155 samples. 
 
 
 The image below shows the distribution of the steering angles in this first training dataset.
@@ -56,50 +57,20 @@ after the above data augmentation steps.
 The model used is the model from the NVIDIA autonomous vehicle group. The figure below shows the architecture.
 ![alt text][image4]
 
+The image intensites are normalized in the first layer of the keras model. Also as mentioned previously the RGB images were converted to YUV space
+as recommended by NVIDIA for use with the selected model.
 
-image = (image-128.0)/128.0
+Inorder for the model to generalize better, I used the L2 normalization for the convolutional layers. Droputs in the fully connected layers was tried,
+but the performance seemed to degrade. So it was not used for the final model.
 
-Here is an example of a traffic sign image before and after grayscaling and normalization.
-
-
-
-Data Augmentation
-
-As can be noted, the training set contains only around 35K images. In order to make the traning more generalizable, I decided to 
-augment the data with samples generated from the training set itself. For this I implemented functions to add translation, rotation, zooming
-and perspective projection on the images.
-
-Here is an example of an original image and 4 more images generated with the described transformations from the original image.
-
-![alt text][image5]
-
-The augmented dataset hence should be more robust to differences in the pose of the camera, centering and rotation in the images 
-presented to the neural network.
-
-
-
-My final model consisted of the following layers:
-
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x1 Grayscale image   			    	| 
-| Convolution 5x5     	| 1x1 stride, VALID padding, outputs 28x28x20 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 14x14x20 				|
-| Convolution 5x5     	| 1x1 stride, VALID padding, outputs 10x10x36 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 5x5x36 					|
-| Fully connected		| outputs 120        							|
-| RELU					|												|
-| Fully connected		| outputs 84        							|
-| RELU					|												|
-| Fully connected		| outputs 43        							|
 
 ### Training
 
-To train the model, I used an Adam Optimizer. The training was done with 20 Epochs  and a batch size of 128. In order for the model to
-generalize better, I used dropouts in the two fully connected layers before the output layer. The drop out probability was set to 0.5 during
-the training.
+To train the model, I used an Adam Optimizer. The mean squared error(MSE) was used as the loss function and training was done for 5 epochs. Callbacks
+were implemented to save the model only when the MSE on the validation set improved from the previously saved verison. An early stopping callback 
+was also implemented if the MSE did not improve. However for the small number of epochs used here, early termination never occured.
+
+
 
 My final model results were:
 * training set accuracy of   :99.7%

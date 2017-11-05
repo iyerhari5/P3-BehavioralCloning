@@ -62,14 +62,17 @@ def get_training_data(image_paths,measurements):
 	
 def augment_vertshift_shading(img, angle):
     new_img = img.astype(float)
-    # random brightness - add a random value to the image
-    value = np.random.randint(-28, 28)
-    if value > 0:
-        mask = (new_img[:,:,0] + value) > 255 
-    if value <= 0:
-        mask = (new_img[:,:,0] + value) < 0
-    new_img[:,:,0] += np.where(mask, 0, value)
-   
+  
+	# random brightness - add a random value to the image
+	value = np.random.randint(-28, 28)
+    channel = np.random.randint(0,2)
+	
+    temp_channel = new_img[:,:,channel]
+    temp_channel+= value
+    temp_channel[temp_channel>255]=255
+    temp_channel[temp_channel<0]=0
+    new_image[:,:,channel] = temp_channel
+    
     # random shadow - full height, random left/right side, random darkening
     h,w = new_img.shape[0:2]
     mid = np.random.randint(0,w)
